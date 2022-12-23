@@ -2,6 +2,8 @@ import time
 import curses
 import asyncio
 
+TIC_TIMEOUT = 0.1
+
 
 def draw(canvas):
     curses.curs_set(False)
@@ -21,7 +23,7 @@ def draw(canvas):
         if len(coroutines) == 0:
             break
         canvas.refresh()
-        time.sleep(1)
+        time.sleep(TIC_TIMEOUT)
 
 
 # def star(canvas):
@@ -47,11 +49,17 @@ async def blink(canvas, row, column, symbol='*'):
     while True:
         canvas.addstr(row, column, symbol, curses.A_DIM)
         await asyncio.sleep(0)
+        await asyncio.sleep(0)
+        await asyncio.sleep(0)
+        await asyncio.sleep(0)
+        await asyncio.sleep(0)
+        await asyncio.sleep(0)
 
         canvas.addstr(row, column, symbol)
         await asyncio.sleep(0)
 
         canvas.addstr(row, column, symbol, curses.A_BOLD)
+        await asyncio.sleep(0)
         await asyncio.sleep(0)
 
         canvas.addstr(row, column, symbol)
