@@ -5,11 +5,21 @@ import asyncio
 
 def draw(canvas):
     curses.curs_set(False)
-    row, column = (5, 20)
     canvas.border()
-    coroutine = blink(canvas, row, column)
+    coroutine_1 = blink(canvas, 5, 20)
+    coroutine_2 = blink(canvas, 5, 22)
+    coroutine_3 = blink(canvas, 5, 24)
+    coroutine_4 = blink(canvas, 5, 26)
+    coroutine_5 = blink(canvas, 5, 28)
+    coroutines = [coroutine_1, coroutine_2, coroutine_3, coroutine_4, coroutine_5]
     while True:
-        coroutine.send(None)
+        for coroutine in coroutines.copy():
+            try:
+                coroutine.send(None)
+            except StopIteration:
+                coroutines.remove(coroutine)
+        if len(coroutines) == 0:
+            break
         canvas.refresh()
         time.sleep(1)
 
@@ -51,4 +61,3 @@ async def blink(canvas, row, column, symbol='*'):
 if __name__ == '__main__':
     curses.update_lines_cols()
     curses.wrapper(draw)
-
