@@ -50,19 +50,20 @@ def draw(canvas):
 async def blink(canvas, row, column, symbol='*'):
     while True:
         canvas.addstr(row, column, symbol, curses.A_DIM)
-        for _ in range(20):
+        d = random.randint(1, random.randint(50, 100))
+        for _ in range(d + 20):
             await asyncio.sleep(0)
 
         canvas.addstr(row, column, symbol)
-        for _ in range(3):
+        for _ in range(d + 3):
             await asyncio.sleep(0)
 
         canvas.addstr(row, column, symbol, curses.A_BOLD)
-        for _ in range(5):
+        for _ in range(d + 5):
             await asyncio.sleep(0)
 
         canvas.addstr(row, column, symbol)
-        for _ in range(3):
+        for _ in range(d + 3):
             await asyncio.sleep(0)
 
 
