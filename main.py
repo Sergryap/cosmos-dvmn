@@ -3,8 +3,13 @@ import curses
 import asyncio
 import random
 from fire_animation import fire
+from curses_tools import draw_frame
 
 TIC_TIMEOUT = 0.05
+
+
+async def animate_spaceship(canvas):
+    pass
 
 
 def fire_draw(canvas):
