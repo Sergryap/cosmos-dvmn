@@ -49,25 +49,6 @@ def draw(canvas):
         time.sleep(TIC_TIMEOUT)
 
 
-# def star(canvas):
-#     curses.curs_set(False)
-#     row, column = (5, 20)
-#     canvas.border()
-#     while True:
-#         canvas.addstr(row, column, '*', curses.A_DIM)
-#         canvas.refresh()
-#         time.sleep(2)
-#         canvas.addstr(row, column, '*')
-#         canvas.refresh()
-#         time.sleep(0.3)
-#         canvas.addstr(row, column, '*', curses.A_BOLD)
-#         canvas.refresh()
-#         time.sleep(0.5)
-#         canvas.addstr(row, column, '*')
-#         canvas.refresh()
-#         time.sleep(0.3)
-
-
 async def blink(canvas, row, column, symbol='*'):
     while True:
         canvas.addstr(row, column, symbol, curses.A_DIM)
