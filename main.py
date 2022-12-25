@@ -25,6 +25,7 @@ def fire_draw(canvas):
 def draw(canvas):
     curses.curs_set(False)
     canvas.border()
+    canvas.nodelay(True)
     height, width = canvas.getmaxyx()
     with open(os.path.join(os.getcwd(), 'frames', ' rocket_frame_1.txt'), 'r', encoding='utf-8') as file:
         frame1 = file.read()
