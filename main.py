@@ -1,15 +1,11 @@
+import os
 import time
 import curses
 import asyncio
 import random
-from fire_animation import fire
-from curses_tools import draw_frame
+from animation import fire, animate_spaceship
 
-TIC_TIMEOUT = 0.05
-
-
-async def animate_spaceship(canvas):
-    pass
+TIC_TIMEOUT = 0.1
 
 
 def fire_draw(canvas):
@@ -30,7 +26,11 @@ def draw(canvas):
     curses.curs_set(False)
     canvas.border()
     height, width = canvas.getmaxyx()
-    coroutines = []
+    with open(os.path.join(os.getcwd(), 'frames', ' rocket_frame_1.txt'), 'r', encoding='utf-8') as file:
+        frame1 = file.read()
+    with open(os.path.join(os.getcwd(), 'frames', ' rocket_frame_2.txt'), 'r', encoding='utf-8') as file:
+        frame2 = file.read()
+    coroutines = [animate_spaceship(canvas, height / 3, width / 2, frame1, frame2)]
     for _ in range(300):
         row = random.randint(1, height - 2)
         column = random.randint(1, width - 2)

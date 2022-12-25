@@ -1,5 +1,7 @@
 import asyncio
 import curses
+from curses_tools import draw_frame
+from itertools import cycle
 
 
 async def fire(canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0):
@@ -30,3 +32,11 @@ async def fire(canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0
         canvas.addstr(round(row), round(column), ' ')
         row += rows_speed
         column += columns_speed
+
+
+async def animate_spaceship(canvas, start_row, start_column, frame1, frame2):
+    for frame in cycle([frame1, frame2]):
+        draw_frame(canvas, start_row, start_column, frame)
+        canvas.refresh()
+        await asyncio.sleep(0)
+        draw_frame(canvas, start_row, start_column, frame, negative=True)
