@@ -2,8 +2,23 @@ import time
 import curses
 import asyncio
 import random
+from fire_animation import fire
 
 TIC_TIMEOUT = 0.05
+
+
+def fire_draw(canvas):
+    curses.curs_set(False)
+    canvas.border()
+    height, width = canvas.getmaxyx()
+    coroutine = fire(canvas, height / 2, width / 2)
+    while True:
+        try:
+            coroutine.send(None)
+        except StopIteration:
+            break
+        canvas.refresh()
+        time.sleep(TIC_TIMEOUT)
 
 
 def draw(canvas):
@@ -69,4 +84,5 @@ async def blink(canvas, row, column, symbol='*'):
 
 if __name__ == '__main__':
     curses.update_lines_cols()
+    curses.wrapper(fire_draw)
     curses.wrapper(draw)
