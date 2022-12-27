@@ -8,7 +8,7 @@ from animation import fire, animate_spaceship
 TIC_TIMEOUT = 0.1
 
 
-def fire_draw(canvas):
+def start_draw(canvas):
     curses.curs_set(False)
     canvas.border()
     height, width = canvas.getmaxyx()
@@ -71,5 +71,5 @@ async def blink(canvas, row, column, symbol='*'):
 
 if __name__ == '__main__':
     curses.update_lines_cols()
-    curses.wrapper(fire_draw)
+    curses.wrapper(start_draw)
     curses.wrapper(draw)
