@@ -34,11 +34,11 @@ def draw(canvas):
     canvas.border()
     canvas.nodelay(True)
     height, width = canvas.getmaxyx()
-    with open(os.path.join(os.getcwd(), 'frames', 'rocket_frame_1.txt'), 'r', encoding='utf-8') as file:
-        frame1 = file.read()
-    with open(os.path.join(os.getcwd(), 'frames', 'rocket_frame_2.txt'), 'r', encoding='utf-8') as file:
-        frame2 = file.read()
-    coroutines = [animate_spaceship(canvas, height / 3, width / 2, frame1, frame2)]
+    frames = []
+    for file in os.listdir('frames'):
+        with open(os.path.join(os.getcwd(), 'frames', file), 'r', encoding='utf-8') as frame:
+            frames.append(frame.read())
+    coroutines = [animate_spaceship(canvas, height / 3, width / 2, *frames)]
     for _ in range(300):
         row = random.randint(1, height - 2)
         column = random.randint(1, width - 2)
