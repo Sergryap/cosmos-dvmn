@@ -42,9 +42,8 @@ async def animate_spaceship(canvas, start_row, start_column, frame1, frame2):
         draw_frame(canvas, row, column, frame)
         await asyncio.sleep(0)
         draw_frame(canvas, row, column, frame, negative=True)
-        delta_coord = read_controls(canvas)
-        size_row = get_frame_size(frame1)[0]
-        size_column = get_frame_size(frame1)[1]
-        row, column = row + delta_coord[0], column + delta_coord[1]
+        rows_direction, columns_direction, __ = read_controls(canvas)
+        size_row, size_column = get_frame_size(frame1)
+        row, column = row + rows_direction, column + columns_direction
         row = 1 if row < 1 else height - size_row - 1 if row > height - size_row - 1 else row
         column = 1 if column < 1 else width - size_column - 1 if column > width - size_column - 1 else column
