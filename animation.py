@@ -4,6 +4,8 @@ from curses_tools import draw_frame
 from itertools import cycle
 from curses_tools import read_controls, get_frame_size
 
+MIN_COORD = 1
+
 
 async def fire(canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0):
     """Display animation of gun shot, direction and speed can be specified."""
@@ -45,5 +47,15 @@ async def animate_spaceship(canvas, start_row, start_column, frame1, frame2):
         rows_direction, columns_direction, __ = read_controls(canvas)
         size_row, size_column = get_frame_size(frame1)
         row, column = row + rows_direction, column + columns_direction
-        row = 1 if row < 1 else height - size_row - 1 if row > height - size_row - 1 else row
-        column = 1 if column < 1 else width - size_column - 1 if column > width - size_column - 1 else column
+        row = (
+            MIN_COORD if row < MIN_COORD
+            else height - size_row - MIN_COORD
+            if row > height - size_row - MIN_COORD
+            else row
+        )
+        column = (
+            MIN_COORD if column < MIN_COORD
+            else width - size_column - MIN_COORD
+            if column > width - size_column - MIN_COORD
+            else column
+        )
