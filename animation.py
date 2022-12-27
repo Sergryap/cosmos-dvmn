@@ -40,7 +40,6 @@ async def animate_spaceship(canvas, start_row, start_column, frame1, frame2):
     height, width = canvas.getmaxyx()
     for frame in cycle([frame1, frame2]):
         draw_frame(canvas, row, column, frame)
-        canvas.refresh()
         await asyncio.sleep(0)
         draw_frame(canvas, row, column, frame, negative=True)
         delta_coord = read_controls(canvas)

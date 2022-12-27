@@ -8,18 +8,25 @@ from animation import fire, animate_spaceship
 TIC_TIMEOUT = 0.1
 
 
+def run_coroutines(canvas, coroutines):
+    while True:
+        for coroutine in coroutines.copy():
+            try:
+                coroutine.send(None)
+            except StopIteration:
+                coroutines.remove(coroutine)
+        if len(coroutines) == 0:
+            break
+        canvas.refresh()
+        time.sleep(TIC_TIMEOUT)
+
+
 def start_draw(canvas):
     curses.curs_set(False)
     canvas.border()
     height, width = canvas.getmaxyx()
-    coroutine = fire(canvas, height / 2, width / 2)
-    while True:
-        try:
-            coroutine.send(None)
-        except StopIteration:
-            break
-        canvas.refresh()
-        time.sleep(TIC_TIMEOUT)
+    coroutines = [fire(canvas, height / 2, width / 2)]
+    run_coroutines(canvas, coroutines)
 
 
 def draw(canvas):
@@ -37,16 +44,7 @@ def draw(canvas):
         column = random.randint(1, width - 2)
         symbol = random.choice('+*.:')
         coroutines.append(blink(canvas, row, column, symbol))
-    while True:
-        for coroutine in coroutines.copy():
-            try:
-                coroutine.send(None)
-            except StopIteration:
-                coroutines.remove(coroutine)
-        if len(coroutines) == 0:
-            break
-        canvas.refresh()
-        time.sleep(TIC_TIMEOUT)
+    run_coroutines(canvas, coroutines)
 
 
 async def blink(canvas, row, column, symbol='*'):
