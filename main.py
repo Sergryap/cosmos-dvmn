@@ -43,27 +43,27 @@ def draw(canvas):
         row = random.randint(1, height - 2)
         column = random.randint(1, width - 2)
         symbol = random.choice('+*.:')
-        coroutines.append(blink(canvas, row, column, symbol))
+        offset_tics = random.randint(0, 5)
+        coroutines.append(blink(canvas, row, column, offset_tics, symbol))
     run_coroutines(canvas, coroutines)
 
 
-async def blink(canvas, row, column, symbol='*'):
+async def blink(canvas, row, column, offset_tics, symbol='*'):
     while True:
         canvas.addstr(row, column, symbol, curses.A_DIM)
-        time_addition = random.randint(0, 5)
-        for _ in range(time_addition + 20):
+        for _ in range(offset_tics + 20):
             await asyncio.sleep(0)
 
         canvas.addstr(row, column, symbol)
-        for _ in range(time_addition + 3):
+        for _ in range(offset_tics + 3):
             await asyncio.sleep(0)
 
         canvas.addstr(row, column, symbol, curses.A_BOLD)
-        for _ in range(time_addition + 5):
+        for _ in range(offset_tics + 5):
             await asyncio.sleep(0)
 
         canvas.addstr(row, column, symbol)
-        for _ in range(time_addition + 3):
+        for _ in range(offset_tics + 3):
             await asyncio.sleep(0)
 
 
