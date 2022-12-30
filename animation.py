@@ -41,23 +41,19 @@ async def animate_spaceship(canvas, start_row, start_column, frame1, frame2):
     row, column = start_row, start_column
     size_row, size_column = get_frame_size(frame1)
     height, width = canvas.getmaxyx()
-    for frame in cycle([frame1, frame2]):
+    for frame in cycle([frame1, frame1, frame2, frame2]):
         draw_frame(canvas, row, column, frame)
-        rows_direction_1, columns_direction_1, __ = read_controls(canvas)
         await asyncio.sleep(0)
         draw_frame(canvas, row, column, frame, negative=True)
-        rows_direction_2, columns_direction_2, __ = read_controls(canvas)
-        row += rows_direction_1 + rows_direction_2
-        column += columns_direction_1 + columns_direction_2
+        rows_direction, columns_direction, __ = read_controls(canvas)
+        row += rows_direction
+        column += columns_direction
         row = (
             MIN_COORD if row < MIN_COORD
-            else height - size_row - MIN_COORD
-            if row > height - size_row - MIN_COORD
-            else row
+            else min(height - size_row - MIN_COORD, row)
         )
         column = (
             MIN_COORD if column < MIN_COORD
-            else width - size_column - MIN_COORD
-            if column > width - size_column - MIN_COORD
-            else column
+            else min(width - size_column - MIN_COORD, column)
         )
+
