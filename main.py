@@ -21,19 +21,13 @@ def run_coroutines(canvas, coroutines):
         time.sleep(TIC_TIMEOUT)
 
 
-def start_draw(canvas):
-    curses.curs_set(False)
-    canvas.border()
-    height, width = canvas.getmaxyx()
-    coroutines = [fire(canvas, height / 2, width / 2)]
-    run_coroutines(canvas, coroutines)
-
-
 def draw(canvas):
     curses.curs_set(False)
     canvas.border()
     canvas.nodelay(True)
     height, width = canvas.getmaxyx()
+    coroutines = [fire(canvas, height / 2, width / 2)]
+    run_coroutines(canvas, coroutines)
     frames = []
     for file in os.listdir('frames'):
         with open(os.path.join(os.getcwd(), 'frames', file), 'r', encoding='utf-8') as frame:
@@ -69,5 +63,4 @@ async def blink(canvas, row, column, offset_tics, symbol='*'):
 
 if __name__ == '__main__':
     curses.update_lines_cols()
-    curses.wrapper(start_draw)
     curses.wrapper(draw)
