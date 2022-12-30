@@ -18,8 +18,6 @@ def run_coroutines(canvas, coroutines):
                 coroutine.send(None)
             except StopIteration:
                 coroutines.remove(coroutine)
-        if len(coroutines) == 0:
-            break
         canvas.refresh()
         time.sleep(TIC_TIMEOUT)
 
@@ -29,13 +27,14 @@ def draw(canvas):
     canvas.border()
     canvas.nodelay(True)
     height, width = canvas.getmaxyx()
-    coroutines = [fire(canvas, height / 2, width / 2)]
-    run_coroutines(canvas, coroutines)
     frames = []
     for file in os.listdir('frames'):
         with open(os.path.join(os.getcwd(), 'frames', file), 'r', encoding='utf-8') as frame:
             frames.append(frame.read())
-    coroutines = [animate_spaceship(canvas, height / 3, width / 2, *frames)]
+    coroutines = [
+        fire(canvas, height / 2, width / 2),
+        animate_spaceship(canvas, height / 3, width / 2, *frames)
+    ]
     for _ in range(NUMBER_OF_STARS):
         row = random.randint(MIN_COORD, height - 2)
         column = random.randint(MIN_COORD, width - 2)
