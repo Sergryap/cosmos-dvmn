@@ -56,4 +56,3 @@ async def animate_spaceship(canvas, start_row, start_column, frame1, frame2):
             MIN_COORD if column < MIN_COORD
             else min(width - size_column - MIN_COORD, column)
         )
-
