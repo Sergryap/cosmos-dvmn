@@ -4,8 +4,11 @@ import curses
 import asyncio
 import random
 from animation import fire, animate_spaceship
+from animation import MIN_COORD
 
 TIC_TIMEOUT = 0.1
+NUMBER_OF_STARS = 300
+MAX_OFFSET_TICS = 5
 
 
 def run_coroutines(canvas, coroutines):
@@ -33,11 +36,11 @@ def draw(canvas):
         with open(os.path.join(os.getcwd(), 'frames', file), 'r', encoding='utf-8') as frame:
             frames.append(frame.read())
     coroutines = [animate_spaceship(canvas, height / 3, width / 2, *frames)]
-    for _ in range(300):
-        row = random.randint(1, height - 2)
-        column = random.randint(1, width - 2)
+    for _ in range(NUMBER_OF_STARS):
+        row = random.randint(MIN_COORD, height - 2)
+        column = random.randint(MIN_COORD, width - 2)
         symbol = random.choice('+*.:')
-        offset_tics = random.randint(0, 5)
+        offset_tics = random.randint(0, MAX_OFFSET_TICS)
         coroutines.append(blink(canvas, row, column, offset_tics, symbol))
     run_coroutines(canvas, coroutines)
 
