@@ -1,5 +1,6 @@
 import asyncio
 import curses
+import random
 from curses_tools import draw_frame
 from itertools import cycle
 from curses_tools import read_controls, get_frame_size
@@ -54,6 +55,21 @@ async def animate_spaceship(canvas, start_row, start_column, frame1, frame2):
         column = MIN_COORD if column < MIN_COORD else min(max_column, column)
 
 
+def get_coroutine_list(canvas, coroutine, count, *args, **kwargs):
+    coroutines = []
+    for _ in range(count):
+        coroutines.append(coroutine(canvas, *args, **kwargs))
+    return coroutines
+
+
+async def fill_orbit_with_garbage(canvas, width, trashes, min_speed, max_speed):
+    while True:
+        trash = random.choice(trashes)
+        column = random.randrange(width)
+        speed = round(random.uniform(min_speed, max_speed), 1)
+        await fly_garbage(canvas, column, trash, speed)
+
+
 async def fly_garbage(canvas, column, garbage_frame, speed=0.5):
     """Animate garbage, flying from top to bottom. Сolumn position will stay same, as specified on start."""
     rows_number, columns_number = canvas.getmaxyx()
@@ -68,3 +84,4 @@ async def fly_garbage(canvas, column, garbage_frame, speed=0.5):
         await asyncio.sleep(0)
         draw_frame(canvas, row, column, garbage_frame, negative=True)
         row += speed
+

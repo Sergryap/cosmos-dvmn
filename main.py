@@ -3,12 +3,15 @@ import time
 import curses
 import asyncio
 import random
-from animation import fire, animate_spaceship, fly_garbage
+from animation import fire, animate_spaceship, fly_garbage, fill_orbit_with_garbage, get_coroutine_list
 from animation import MIN_COORD
 
 TIC_TIMEOUT = 0.1
 NUMBER_OF_STARS = 300
 MAX_OFFSET_TICS = 5
+TRASH_INDEX_DENSITY = 20
+MIN_TRASH_SPEED = 0.3
+MAX_TRASH_SPEED = 1.8
 
 
 def run_coroutines(canvas, coroutines):
@@ -36,10 +39,20 @@ def draw(canvas):
                     rockets.append(frame.read())
                 elif folder == 'trash':
                     trashes.append(frame.read())
+    coroutine_trash_count = width // TRASH_INDEX_DENSITY
     coroutines = [
         fire(canvas, height / 2, width / 2),
         animate_spaceship(canvas, height / 3, width / 2, *rockets),
-        fly_garbage(canvas, random.randrange(width), random.choice(trashes), speed=0.5)
+        *get_coroutine_list(
+            canvas,
+            coroutine=fill_orbit_with_garbage,
+            count=coroutine_trash_count,
+            width=width,
+            trashes=trashes,
+            min_speed=MIN_TRASH_SPEED,
+            max_speed=MAX_TRASH_SPEED
+        )
+
     ]
 
     for _ in range(NUMBER_OF_STARS):
@@ -73,3 +86,4 @@ async def blink(canvas, row, column, offset_tics, symbol='*'):
 if __name__ == '__main__':
     curses.update_lines_cols()
     curses.wrapper(draw)
+
