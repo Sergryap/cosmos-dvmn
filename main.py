@@ -3,7 +3,7 @@ import time
 import curses
 import asyncio
 import random
-from animation import fire, animate_spaceship
+from animation import fire, animate_spaceship, fly_garbage
 from animation import MIN_COORD
 
 TIC_TIMEOUT = 0.1
@@ -27,14 +27,21 @@ def draw(canvas):
     canvas.border()
     canvas.nodelay(True)
     height, width = canvas.getmaxyx()
-    frames = []
-    for file in os.listdir('frames'):
-        with open(os.path.join(os.getcwd(), 'frames', file), 'r', encoding='utf-8') as frame:
-            frames.append(frame.read())
+    rockets, trashes = [], []
+    for folder in os.listdir('frames'):
+        path = os.path.join(os.getcwd(), 'frames', folder)
+        for file in os.listdir(path):
+            with open(os.path.join(path, file), 'r', encoding='utf-8') as frame:
+                if folder == 'rocket':
+                    rockets.append(frame.read())
+                elif folder == 'trash':
+                    trashes.append(frame.read())
     coroutines = [
         fire(canvas, height / 2, width / 2),
-        animate_spaceship(canvas, height / 3, width / 2, *frames)
+        animate_spaceship(canvas, height / 3, width / 2, *rockets),
+        fly_garbage(canvas, random.randrange(width), random.choice(trashes), speed=0.5)
     ]
+
     for _ in range(NUMBER_OF_STARS):
         row = random.randint(MIN_COORD, height - 2)
         column = random.randint(MIN_COORD, width - 2)
