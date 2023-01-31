@@ -4,6 +4,7 @@ import random
 from curses_tools import draw_frame
 from itertools import cycle
 from curses_tools import read_controls, get_frame_size
+from physics import update_speed
 
 MIN_COORD = 1
 
@@ -44,13 +45,18 @@ async def animate_spaceship(canvas, start_row, start_column, frame1, frame2):
     height, width = canvas.getmaxyx()
     max_row = height - size_row - MIN_COORD
     max_column = width - size_column - MIN_COORD
+    row_speed = column_speed = 0
     for frame in cycle([frame1, frame1, frame2, frame2]):
         draw_frame(canvas, row, column, frame)
         await asyncio.sleep(0)
         draw_frame(canvas, row, column, frame, negative=True)
         rows_direction, columns_direction, __ = read_controls(canvas)
-        row += rows_direction
-        column += columns_direction
+        row_speed, column_speed = update_speed(
+            row_speed, column_speed, rows_direction, columns_direction,
+            row_speed_limit=5, column_speed_limit=5
+        )
+        row += row_speed
+        column += column_speed
         row = MIN_COORD if row < MIN_COORD else min(max_row, row)
         column = MIN_COORD if column < MIN_COORD else min(max_column, column)
 
