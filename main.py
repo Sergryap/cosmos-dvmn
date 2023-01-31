@@ -67,20 +67,21 @@ def draw(canvas):
 async def blink(canvas, row, column, offset_tics, symbol='*'):
     while True:
         canvas.addstr(row, column, symbol, curses.A_DIM)
-        for _ in range(offset_tics + 20):
-            await asyncio.sleep(0)
+        await sleep(offset_tics, 20)
 
         canvas.addstr(row, column, symbol)
-        for _ in range(offset_tics + 3):
-            await asyncio.sleep(0)
+        await sleep(offset_tics, 3)
 
         canvas.addstr(row, column, symbol, curses.A_BOLD)
-        for _ in range(offset_tics + 5):
-            await asyncio.sleep(0)
+        await sleep(offset_tics, 5)
 
         canvas.addstr(row, column, symbol)
-        for _ in range(offset_tics + 3):
-            await asyncio.sleep(0)
+        await sleep(offset_tics, 3)
+
+
+async def sleep(offset_tics, tics):
+    for _ in range(offset_tics + tics):
+        await asyncio.sleep(0)
 
 
 if __name__ == '__main__':
