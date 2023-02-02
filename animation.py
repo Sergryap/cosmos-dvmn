@@ -40,7 +40,7 @@ async def fire(canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0
         column += columns_speed
 
 
-async def animate_spaceship(canvas, start_row, start_column, cors, frame1, frame2):
+async def animate_spaceship(canvas, start_row, start_column, coroutines, frame1, frame2):
     row, column = start_row, start_column
     size_row, size_column = get_frame_size(frame1)
     height, width = canvas.getmaxyx()
@@ -53,7 +53,7 @@ async def animate_spaceship(canvas, start_row, start_column, cors, frame1, frame
         draw_frame(canvas, row, column, frame, negative=True)
         rows_direction, columns_direction, space_bar = read_controls(canvas)
         if space_bar:
-            cors.append(fire(canvas, row, column + size_column // 2, rows_speed=-1))
+            coroutines.append(fire(canvas, row, column + size_column // 2, rows_speed=-1))
         row_speed, column_speed = update_speed(
             row_speed, column_speed, rows_direction, columns_direction,
             row_speed_limit=5, column_speed_limit=5
@@ -64,34 +64,27 @@ async def animate_spaceship(canvas, start_row, start_column, cors, frame1, frame
         column = MIN_COORD if column < MIN_COORD else min(max_column, column)
 
 
-def get_coroutine_list(canvas, coroutine, count, *args, **kwargs):
+def get_fly_garbage_flow(canvas, count, *args, **kwargs):
     coroutines = []
+    rows_number, __ = canvas.getmaxyx()
     for _ in range(count):
-        coroutines.append(coroutine(canvas, *args, **kwargs))
+        start_garbage_row = random.randrange(rows_number)
+        coroutines.append(fly_garbage(canvas, start_row=start_garbage_row, *args, **kwargs))
     return coroutines
 
 
-async def fill_orbit_with_garbage(canvas, width, trashes, min_speed, max_speed):
-    while True:
-        trash = random.choice(trashes)
-        column = random.randrange(width)
-        speed = round(random.uniform(min_speed, max_speed), 1)
-        await fly_garbage(canvas, column, trash, speed)
+async def fly_garbage(canvas, coroutines, trashes, min_speed, max_speed, start_row):
 
+    rows_number, column_number = canvas.getmaxyx()
+    column = random.randrange(column_number)
+    speed = round(random.uniform(min_speed, max_speed), 1)
+    trash = random.choice(trashes)
 
-async def fly_garbage(canvas, column, garbage_frame, speed=0.5):
-    """Animate garbage, flying from top to bottom. Сolumn position will stay same, as specified on start."""
-    rows_number, columns_number = canvas.getmaxyx()
-
-    column = max(column, 0)
-    column = min(column, columns_number - 1)
-
-    row = 0
-
-    while row < rows_number:
-        draw_frame(canvas, row, column, garbage_frame)
+    while start_row < rows_number:
+        draw_frame(canvas, start_row, column, trash)
         await asyncio.sleep(0)
-        draw_frame(canvas, row, column, garbage_frame, negative=True)
-        row += speed
+        draw_frame(canvas, start_row, column, trash, negative=True)
+        start_row += speed
         canvas.border()
-
+    else:
+        coroutines.append(fly_garbage(canvas, coroutines, trashes, min_speed, max_speed, start_row=0))
