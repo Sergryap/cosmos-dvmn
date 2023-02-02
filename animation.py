@@ -1,11 +1,11 @@
 import asyncio
 import curses
 import random
-from curses_tools import draw_frame
+from curses_tools import draw_frame, get_frame_size
 from itertools import cycle
 from curses_tools import read_controls, get_frame_size
 from physics import update_speed
-import time
+from obstacles import Obstacle
 
 MIN_COORD = 1
 
@@ -73,18 +73,22 @@ def get_fly_garbage_flow(canvas, count, *args, **kwargs):
     return coroutines
 
 
-async def fly_garbage(canvas, coroutines, trashes, min_speed, max_speed, start_row):
+async def fly_garbage(canvas, coroutines, trashes, min_speed, max_speed, obstacles, start_row):
 
+    trash = random.choice(trashes)
     rows_number, column_number = canvas.getmaxyx()
+    rows_size, columns_size = get_frame_size(trash)
     column = random.randrange(column_number)
     speed = round(random.uniform(min_speed, max_speed), 1)
-    trash = random.choice(trashes)
 
     while start_row < rows_number:
+        obstacle = Obstacle(start_row, column, rows_size, columns_size)
+        obstacles.append(obstacle)
         draw_frame(canvas, start_row, column, trash)
         await asyncio.sleep(0)
         draw_frame(canvas, start_row, column, trash, negative=True)
         start_row += speed
         canvas.border()
+        obstacles.remove(obstacle)
     else:
-        coroutines.append(fly_garbage(canvas, coroutines, trashes, min_speed, max_speed, start_row=0))
+        coroutines.append(fly_garbage(canvas, coroutines, trashes, min_speed, max_speed, obstacles, start_row=0))

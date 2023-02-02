@@ -5,6 +5,7 @@ import asyncio
 import random
 from animation import fire, animate_spaceship, fly_garbage, get_fly_garbage_flow
 from animation import MIN_COORD
+from obstacles import show_obstacles
 
 TIC_TIMEOUT = 0.1
 NUMBER_OF_STARS = 300
@@ -42,7 +43,7 @@ def draw(canvas):
                 elif folder == 'trash':
                     trashes.append(frame.read())
     coroutine_trash_count = column_number // TRASH_INDEX_DENSITY
-    coroutines = []
+    coroutines, obstacles = [], []
     coroutines += get_fly_garbage_flow(
             canvas,
             coroutine_trash_count,
@@ -50,7 +51,9 @@ def draw(canvas):
             trashes=trashes,
             min_speed=MIN_TRASH_SPEED,
             max_speed=MAX_TRASH_SPEED,
+            obstacles=obstacles
         )
+    coroutines.append(show_obstacles(canvas, obstacles))
     for _ in range(NUMBER_OF_STARS):
         row = random.randint(MIN_COORD, rows_number - 2)
         column = random.randint(MIN_COORD, column_number - 2)
