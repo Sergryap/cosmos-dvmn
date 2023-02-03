@@ -3,7 +3,7 @@ import time
 import curses
 import asyncio
 import random
-from animation import fire, animate_spaceship, fly_garbage, get_fly_garbage_flow
+from animation import fire, animate_spaceship, fly_garbage, get_fly_garbage_flow, show_gameover
 from animation import MIN_COORD
 from obstacles import show_obstacles
 
@@ -61,7 +61,12 @@ def draw(canvas):
         symbol = random.choice('+*.:')
         offset_tics = random.randint(0, MAX_OFFSET_TICS)
         coroutines.append(blink(canvas, row, column, offset_tics, symbol))
-    coroutines.append(animate_spaceship(canvas, start_rocket_row, start_rocket_col, coroutines, obstacles, obstacles_in_last_collisions, *rockets))
+    coroutines.append(
+        animate_spaceship(
+            canvas, start_rocket_row, start_rocket_col, coroutines,
+            obstacles, obstacles_in_last_collisions, *rockets
+        )
+    )
     run_coroutines(canvas, coroutines)
 
 

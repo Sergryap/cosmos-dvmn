@@ -1,6 +1,7 @@
 import asyncio
 import curses
 import random
+import os
 from curses_tools import draw_frame, get_frame_size, read_controls, get_frame_size
 from itertools import cycle
 from physics import update_speed
@@ -52,12 +53,18 @@ async def animate_spaceship(canvas, start_row, start_column, coroutines, obstacl
     max_column = width - size_column - MIN_COORD
     row_speed = column_speed = 0
     for frame in cycle([frame1, frame1, frame2, frame2]):
+        for obstacle in obstacles:
+            if obstacle.has_collision(row, column, size_row, size_column):
+                coroutines.append(show_gameover(canvas))
+                return
         draw_frame(canvas, row, column, frame)
         await asyncio.sleep(0)
         draw_frame(canvas, row, column, frame, negative=True)
         rows_direction, columns_direction, space_bar = read_controls(canvas)
         if space_bar:
-            coroutines.append(fire(canvas, row, column + size_column // 2, obstacles, obstacles_in_last_collisions, rows_speed=-1))
+            coroutines.append(
+                fire(canvas, row, column + size_column // 2, obstacles, obstacles_in_last_collisions, rows_speed=-1)
+            )
         row_speed, column_speed = update_speed(
             row_speed, column_speed, rows_direction, columns_direction,
             row_speed_limit=5, column_speed_limit=5
@@ -72,7 +79,7 @@ def get_fly_garbage_flow(canvas, count, *args, **kwargs):
     coroutines = []
     rows_number, __ = canvas.getmaxyx()
     for _ in range(count):
-        start_garbage_row = random.randrange(rows_number)
+        start_garbage_row = random.randrange(rows_number) - rows_number
         coroutines.append(fly_garbage(canvas, start_row=start_garbage_row, *args, **kwargs))
     return coroutines
 
@@ -110,4 +117,21 @@ async def fly_garbage(
         canvas.border()
         obstacles.remove(obstacle)
     else:
-        coroutines.append(fly_garbage(canvas, coroutines, trashes, min_speed, max_speed, obstacles, obstacles_in_last_collisions, start_row=0))
+        coroutines.append(
+            fly_garbage(
+                canvas, coroutines, trashes, min_speed, max_speed,
+                obstacles, obstacles_in_last_collisions, start_row=0
+            )
+        )
+
+
+async def show_gameover(canvas):
+    with open(os.path.join('frames', 'game_over', 'game_over.txt'), 'r', encoding='utf-8') as frame:
+        game_over_frame = frame.read()
+    rows_number, column_number = canvas.getmaxyx()
+    rows_size, columns_size = get_frame_size(game_over_frame)
+    rows_position = (rows_number - rows_size) // 2
+    columns_position = (column_number - columns_size) // 2
+    while True:
+        draw_frame(canvas, rows_position, columns_position, game_over_frame)
+        await asyncio.sleep(0)
