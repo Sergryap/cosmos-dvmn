@@ -43,7 +43,7 @@ def draw(canvas):
                 elif folder == 'trash':
                     trashes.append(frame.read())
     coroutine_trash_count = column_number // TRASH_INDEX_DENSITY
-    coroutines, obstacles = [], []
+    coroutines, obstacles, obstacles_in_last_collisions = [], [], []
     coroutines += get_fly_garbage_flow(
             canvas,
             coroutine_trash_count,
@@ -51,7 +51,8 @@ def draw(canvas):
             trashes=trashes,
             min_speed=MIN_TRASH_SPEED,
             max_speed=MAX_TRASH_SPEED,
-            obstacles=obstacles
+            obstacles=obstacles,
+            obstacles_in_last_collisions=obstacles_in_last_collisions
         )
     # coroutines.append(show_obstacles(canvas, obstacles))
     for _ in range(NUMBER_OF_STARS):
@@ -60,7 +61,7 @@ def draw(canvas):
         symbol = random.choice('+*.:')
         offset_tics = random.randint(0, MAX_OFFSET_TICS)
         coroutines.append(blink(canvas, row, column, offset_tics, symbol))
-    coroutines.append(animate_spaceship(canvas, start_rocket_row, start_rocket_col, coroutines, obstacles, *rockets))
+    coroutines.append(animate_spaceship(canvas, start_rocket_row, start_rocket_col, coroutines, obstacles, obstacles_in_last_collisions, *rockets))
     run_coroutines(canvas, coroutines)
 
 

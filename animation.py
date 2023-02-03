@@ -9,7 +9,7 @@ from obstacles import Obstacle
 MIN_COORD = 1
 
 
-async def fire(canvas, start_row, start_column, obstacles, rows_speed=-0.3, columns_speed=0):
+async def fire(canvas, start_row, start_column, obstacles, obstacles_in_last_collisions, rows_speed=-0.3, columns_speed=0):
     """Display animation of gun shot, direction and speed can be specified."""
 
     row, column = start_row, start_column
@@ -34,6 +34,7 @@ async def fire(canvas, start_row, start_column, obstacles, rows_speed=-0.3, colu
     while MIN_COORD < row < max_row and MIN_COORD < column < max_column:
         for obstacle in obstacles:
             if obstacle.has_collision(row, column):
+                obstacles_in_last_collisions.append(obstacle)
                 return
         canvas.addstr(round(row), round(column), symbol)
         await asyncio.sleep(0)
@@ -42,7 +43,7 @@ async def fire(canvas, start_row, start_column, obstacles, rows_speed=-0.3, colu
         column += columns_speed
 
 
-async def animate_spaceship(canvas, start_row, start_column, coroutines, obstacles, frame1, frame2):
+async def animate_spaceship(canvas, start_row, start_column, coroutines, obstacles, obstacles_in_last_collisions, frame1, frame2):
     row, column = start_row, start_column
     size_row, size_column = get_frame_size(frame1)
     height, width = canvas.getmaxyx()
@@ -55,7 +56,7 @@ async def animate_spaceship(canvas, start_row, start_column, coroutines, obstacl
         draw_frame(canvas, row, column, frame, negative=True)
         rows_direction, columns_direction, space_bar = read_controls(canvas)
         if space_bar:
-            coroutines.append(fire(canvas, row, column + size_column // 2, obstacles, rows_speed=-1))
+            coroutines.append(fire(canvas, row, column + size_column // 2, obstacles, obstacles_in_last_collisions, rows_speed=-1))
         row_speed, column_speed = update_speed(
             row_speed, column_speed, rows_direction, columns_direction,
             row_speed_limit=5, column_speed_limit=5
@@ -75,7 +76,10 @@ def get_fly_garbage_flow(canvas, count, *args, **kwargs):
     return coroutines
 
 
-async def fly_garbage(canvas, coroutines, trashes, min_speed, max_speed, obstacles, start_row):
+async def fly_garbage(
+        canvas, coroutines, trashes, min_speed, max_speed,
+        obstacles, obstacles_in_last_collisions, start_row
+):
 
     trash = random.choice(trashes)
     rows_number, column_number = canvas.getmaxyx()
@@ -90,7 +94,16 @@ async def fly_garbage(canvas, coroutines, trashes, min_speed, max_speed, obstacl
         await asyncio.sleep(0)
         draw_frame(canvas, start_row, column, trash, negative=True)
         start_row += speed
+        if obstacle in obstacles_in_last_collisions:
+            obstacles.remove(obstacle)
+            obstacles_in_last_collisions.remove(obstacle)
+            trash = random.choice(trashes)
+            rows_size, columns_size = get_frame_size(trash)
+            column = random.randrange(column_number)
+            speed = round(random.uniform(min_speed, max_speed), 1)
+            start_row = 0
+            continue
         canvas.border()
         obstacles.remove(obstacle)
     else:
-        coroutines.append(fly_garbage(canvas, coroutines, trashes, min_speed, max_speed, obstacles, start_row=0))
+        coroutines.append(fly_garbage(canvas, coroutines, trashes, min_speed, max_speed, obstacles, obstacles_in_last_collisions, start_row=0))
