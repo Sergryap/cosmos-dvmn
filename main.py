@@ -10,7 +10,7 @@ from obstacles import show_obstacles
 TIC_TIMEOUT = 0.1
 NUMBER_OF_STARS = 300
 MAX_OFFSET_TICS = 5
-TRASH_INDEX_DENSITY = 15
+TRASH_INDEX_DENSITY = 25
 MIN_TRASH_SPEED = 0.5
 MAX_TRASH_SPEED = 1.0
 
@@ -53,14 +53,14 @@ def draw(canvas):
             max_speed=MAX_TRASH_SPEED,
             obstacles=obstacles
         )
-    coroutines.append(show_obstacles(canvas, obstacles))
+    # coroutines.append(show_obstacles(canvas, obstacles))
     for _ in range(NUMBER_OF_STARS):
         row = random.randint(MIN_COORD, rows_number - 2)
         column = random.randint(MIN_COORD, column_number - 2)
         symbol = random.choice('+*.:')
         offset_tics = random.randint(0, MAX_OFFSET_TICS)
         coroutines.append(blink(canvas, row, column, offset_tics, symbol))
-    coroutines.append(animate_spaceship(canvas, start_rocket_row, start_rocket_col, coroutines, *rockets))
+    coroutines.append(animate_spaceship(canvas, start_rocket_row, start_rocket_col, coroutines, obstacles, *rockets))
     run_coroutines(canvas, coroutines)
 
 

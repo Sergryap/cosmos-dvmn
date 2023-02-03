@@ -1,16 +1,15 @@
 import asyncio
 import curses
 import random
-from curses_tools import draw_frame, get_frame_size
+from curses_tools import draw_frame, get_frame_size, read_controls, get_frame_size
 from itertools import cycle
-from curses_tools import read_controls, get_frame_size
 from physics import update_speed
 from obstacles import Obstacle
 
 MIN_COORD = 1
 
 
-async def fire(canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0):
+async def fire(canvas, start_row, start_column, obstacles, rows_speed=-0.3, columns_speed=0):
     """Display animation of gun shot, direction and speed can be specified."""
 
     row, column = start_row, start_column
@@ -33,6 +32,9 @@ async def fire(canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0
     curses.beep()
 
     while MIN_COORD < row < max_row and MIN_COORD < column < max_column:
+        for obstacle in obstacles:
+            if obstacle.has_collision(row, column):
+                return
         canvas.addstr(round(row), round(column), symbol)
         await asyncio.sleep(0)
         canvas.addstr(round(row), round(column), ' ')
@@ -40,7 +42,7 @@ async def fire(canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0
         column += columns_speed
 
 
-async def animate_spaceship(canvas, start_row, start_column, coroutines, frame1, frame2):
+async def animate_spaceship(canvas, start_row, start_column, coroutines, obstacles, frame1, frame2):
     row, column = start_row, start_column
     size_row, size_column = get_frame_size(frame1)
     height, width = canvas.getmaxyx()
@@ -53,7 +55,7 @@ async def animate_spaceship(canvas, start_row, start_column, coroutines, frame1,
         draw_frame(canvas, row, column, frame, negative=True)
         rows_direction, columns_direction, space_bar = read_controls(canvas)
         if space_bar:
-            coroutines.append(fire(canvas, row, column + size_column // 2, rows_speed=-1))
+            coroutines.append(fire(canvas, row, column + size_column // 2, obstacles, rows_speed=-1))
         row_speed, column_speed = update_speed(
             row_speed, column_speed, rows_direction, columns_direction,
             row_speed_limit=5, column_speed_limit=5
