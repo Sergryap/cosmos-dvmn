@@ -159,7 +159,7 @@ async def fill_orbit_with_garbage(
     global current_year
     global additional_garbage_flag
     rows_number, column_number = canvas.getmaxyx()
-    interval_garbage_quantity = {(START_YEAR, 1975): 1, (1975, 1995): 2, (1995, 2015): 3, (2015, END_YEAR + 1): 4}
+    interval_garbage_quantity = {(START_YEAR, 1985): 1, (1985, 1995): 2, (1995, 2015): 3, (2015, END_YEAR + 1): 4}
     year_garbage_quantity = {}
     for year in range(START_YEAR, END_YEAR + 1):
         quantity = [qty for interval, qty in interval_garbage_quantity.items() if interval[0] <= year < interval[1]][0]
