@@ -3,8 +3,7 @@ import time
 import curses
 import asyncio
 import random
-from animation import animate_spaceship, fly_garbage, show_year, fill_orbit_with_garbage
-from animation import MIN_COORD
+from animation import MIN_COORD, animate_spaceship, show_year, fill_orbit_with_garbage
 
 TIC_TIMEOUT = 0.1
 NUMBER_OF_STARS = 300

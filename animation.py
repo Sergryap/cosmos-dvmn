@@ -89,12 +89,13 @@ async def animate_spaceship(
 
 async def fly_garbage(
         canvas, coroutines, trashes, min_speed, max_speed,
-        obstacles, obstacles_in_last_collisions, start_row
+        obstacles, obstacles_in_last_collisions
 ):
     trash = random.choice(trashes)
     rows_number, column_number = canvas.getmaxyx()
     rows_size, columns_size = get_frame_size(trash)
     column = random.randrange(column_number)
+    start_row = random.randrange(rows_number) - rows_number
     speed = round(random.uniform(min_speed, max_speed), 1)
     while start_row < rows_number:
         obstacle = Obstacle(start_row, column, rows_size, columns_size)
@@ -113,7 +114,7 @@ async def fly_garbage(
             rows_size, columns_size = get_frame_size(trash)
             column = random.randrange(column_number)
             speed = round(random.uniform(min_speed, max_speed), 1)
-            start_row = 0
+            start_row = random.randrange(rows_number) - rows_number
             continue
         canvas.border()
         obstacles.remove(obstacle)
@@ -122,7 +123,7 @@ async def fly_garbage(
         coroutines.append(
             fly_garbage(
                 canvas, coroutines, trashes, min_speed, max_speed,
-                obstacles, obstacles_in_last_collisions, start_row=start_garbage_row
+                obstacles, obstacles_in_last_collisions
             )
         )
 
@@ -171,10 +172,9 @@ async def fill_orbit_with_garbage(
             additional_garbage_flag = False
             additional_garbage_quantity = year_garbage_quantity[current_year]
             for _ in range(additional_garbage_quantity):
-                start_garbage_row = random.randrange(rows_number) - rows_number
                 coroutines.append(
                     fly_garbage(
                         canvas, coroutines, trashes, min_speed, max_speed,
-                        obstacles, obstacles_in_last_collisions, start_row=start_garbage_row
+                        obstacles, obstacles_in_last_collisions
                     )
                 )
