@@ -12,7 +12,7 @@ MIN_COORD = 1
 START_YEAR = 1957
 END_YEAR = 2023
 YEAR_SPEED_INDEX = 10
-GUNS_APPEARANCE_YEAR = 1985
+GUNS_APPEARANCE_YEAR = 2020
 current_year = START_YEAR
 additional_garbage_flag = True
 
@@ -119,7 +119,6 @@ async def fly_garbage(
         canvas.border()
         obstacles.remove(obstacle)
     else:
-        start_garbage_row = random.randrange(rows_number) - rows_number
         coroutines.append(
             fly_garbage(
                 canvas, coroutines, trashes, min_speed, max_speed,
@@ -159,12 +158,18 @@ async def fill_orbit_with_garbage(
 ):
     global current_year
     global additional_garbage_flag
-    rows_number, column_number = canvas.getmaxyx()
-    interval_garbage_quantity = {(START_YEAR, 1985): 1, (1985, 1995): 2, (1995, 2015): 3, (2015, END_YEAR + 1): 4}
+    interval_garbage_quantity = {(START_YEAR, 1985): 0.2, (1985, 1995): 0.5, (1995, 2020): 1, (2020, END_YEAR + 1): 3}
     year_garbage_quantity = {}
+    quantity_garbage = 0
     for year in range(START_YEAR, END_YEAR + 1):
         quantity = [qty for interval, qty in interval_garbage_quantity.items() if interval[0] <= year < interval[1]][0]
-        year_garbage_quantity.update({year: quantity})
+        quantity_garbage += quantity
+        indicate_quantity = str(quantity_garbage).split('.')
+        if (len(indicate_quantity) > 1 and indicate_quantity[1] != '0') and quantity < 1:
+            year_garbage_quantity.update({year: 0})
+        else:
+            year_garbage_quantity.update({year: int(quantity_garbage)})
+            quantity_garbage = 0
 
     while True:
         await asyncio.sleep(0)
