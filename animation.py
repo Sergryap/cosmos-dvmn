@@ -164,8 +164,8 @@ async def fill_orbit_with_garbage(
     for year in range(START_YEAR, END_YEAR + 1):
         quantity = [qty for interval, qty in interval_garbage_quantity.items() if interval[0] <= year < interval[1]][0]
         quantity_garbage += quantity
-        indicate_quantity = str(quantity_garbage).split('.')
-        if (len(indicate_quantity) > 1 and indicate_quantity[1] != '0') and quantity < 1:
+        quantity_indicate = str(quantity_garbage).split('.')
+        if (len(quantity_indicate) > 1 and quantity_indicate[1] != '0') and quantity < 1:
             year_garbage_quantity.update({year: 0})
         else:
             year_garbage_quantity.update({year: int(quantity_garbage)})
