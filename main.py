@@ -3,14 +3,12 @@ import time
 import curses
 import asyncio
 import random
-from animation import fire, animate_spaceship, fly_garbage, get_fly_garbage_flow, show_gameover
+from animation import animate_spaceship, fly_garbage, show_year, fill_orbit_with_garbage
 from animation import MIN_COORD
-from obstacles import show_obstacles
 
 TIC_TIMEOUT = 0.1
 NUMBER_OF_STARS = 300
 MAX_OFFSET_TICS = 5
-TRASH_INDEX_DENSITY = 25
 MIN_TRASH_SPEED = 0.5
 MAX_TRASH_SPEED = 1.0
 
@@ -42,25 +40,17 @@ def draw(canvas):
                     rockets.append(frame.read())
                 elif folder == 'trash':
                     trashes.append(frame.read())
-    coroutine_trash_count = column_number // TRASH_INDEX_DENSITY
     coroutines, obstacles, obstacles_in_last_collisions = [], [], []
-    coroutines += get_fly_garbage_flow(
-            canvas,
-            coroutine_trash_count,
-            coroutines,
-            trashes=trashes,
-            min_speed=MIN_TRASH_SPEED,
-            max_speed=MAX_TRASH_SPEED,
-            obstacles=obstacles,
-            obstacles_in_last_collisions=obstacles_in_last_collisions
-        )
-    # coroutines.append(show_obstacles(canvas, obstacles))
     for _ in range(NUMBER_OF_STARS):
         row = random.randint(MIN_COORD, rows_number - 2)
         column = random.randint(MIN_COORD, column_number - 2)
         symbol = random.choice('+*.:')
         offset_tics = random.randint(0, MAX_OFFSET_TICS)
         coroutines.append(blink(canvas, row, column, offset_tics, symbol))
+    coroutines.append(show_year(canvas, 1, 1))
+    coroutines.append(fill_orbit_with_garbage(
+        canvas, coroutines, trashes, MIN_TRASH_SPEED, MAX_TRASH_SPEED, obstacles, obstacles_in_last_collisions
+    ))
     coroutines.append(
         animate_spaceship(
             canvas, start_rocket_row, start_rocket_col, coroutines,
